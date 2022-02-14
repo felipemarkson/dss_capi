@@ -26,121 +26,121 @@ unit Generics.Helpers;
 interface
 
 uses
-  Classes, SysUtils;
+    Classes,
+    SysUtils;
 
 type
   { TValueAnsiStringHelper }
 
-  TValueAnsiStringHelper = record helper for AnsiString
-    function ToLower: AnsiString; inline;
-  end;
+    TValueAnsiStringHelper = record helper for Ansistring
+        function ToLower: Ansistring; inline;
+    end;
 
   { TValuewideStringHelper }
 
-  TValueWideStringHelper = record helper for WideString
-    function ToLower: WideString; inline;
-  end;
+    TValueWideStringHelper = record helper for Widestring
+        function ToLower: Widestring; inline;
+    end;
 
   { TValueUnicodeStringHelper }
 
-  TValueUnicodeStringHelper = record helper for UnicodeString
-    function ToLower: UnicodeString; inline;
-  end;
+    TValueUnicodeStringHelper = record helper for Unicodestring
+        function ToLower: Unicodestring; inline;
+    end;
 
   { TValueShortStringHelper }
 
-  TValueShortStringHelper = record helper for ShortString
-    function ToLower: ShortString; inline;
-  end;
+    TValueShortStringHelper = record helper for Shortstring
+        function ToLower: Shortstring; inline;
+    end;
 
   { TValueUTF8StringHelper }
 
-  TValueUTF8StringHelper = record helper for UTF8String
-    function ToLower: UTF8String; inline;
-  end;
+    TValueUTF8StringHelper = record helper for Utf8string
+        function ToLower: Utf8string; inline;
+    end;
 
   { TValueRawByteStringHelper }
 
-  TValueRawByteStringHelper = record helper for RawByteString
-    function ToLower: RawByteString; inline;
-  end;
+    TValueRawByteStringHelper = record helper for Rawbytestring
+        function ToLower: Rawbytestring; inline;
+    end;
 
   { TValueUInt32Helper }
 
-  TValueUInt32Helper = record helper for UInt32
-    class function GetSignMask: UInt32; static; inline;
-    class function GetSizedSignMask(ABits: Byte): UInt32; static; inline;
-    class function GetBitsLength: Byte; static; inline;
+    TValueUInt32Helper = record helper for Uint32
+        class function GetSignMask: Uint32; STATIC; inline;
+        class function GetSizedSignMask(ABits: Byte): Uint32; STATIC; inline;
+        class function GetBitsLength: Byte; STATIC; inline;
 
     const
-      SIZED_SIGN_MASK: array[1..32] of UInt32 = (
-        $80000000, $C0000000, $E0000000, $F0000000, $F8000000, $FC000000, $FE000000, $FF000000,
-        $FF800000, $FFC00000, $FFE00000, $FFF00000, $FFF80000, $FFFC0000, $FFFE0000, $FFFF0000,
-        $FFFF8000, $FFFFC000, $FFFFE000, $FFFFF000, $FFFFF800, $FFFFFC00, $FFFFFE00, $FFFFFF00,
-        $FFFFFF80, $FFFFFFC0, $FFFFFFE0, $FFFFFFF0, $FFFFFFF8, $FFFFFFFC, $FFFFFFFE, $FFFFFFFF);
-      BITS_LENGTH = 32;
-  end;
+        SIZED_SIGN_MASK: array[1..32] of Uint32 = (
+            $80000000, $C0000000, $E0000000, $F0000000, $F8000000, $FC000000, $FE000000, $FF000000,
+            $FF800000, $FFC00000, $FFE00000, $FFF00000, $FFF80000, $FFFC0000, $FFFE0000, $FFFF0000,
+            $FFFF8000, $FFFFC000, $FFFFE000, $FFFFF000, $FFFFF800, $FFFFFC00, $FFFFFE00, $FFFFFF00,
+            $FFFFFF80, $FFFFFFC0, $FFFFFFE0, $FFFFFFF0, $FFFFFFF8, $FFFFFFFC, $FFFFFFFE, $FFFFFFFF);
+        BITS_LENGTH = 32;
+    end;
 
 implementation
 
 { TRawDataStringHelper }
 
-function TValueAnsiStringHelper.ToLower: AnsiString;
+function TValueAnsiStringHelper.ToLower: Ansistring;
 begin
-  Result := LowerCase(Self);
+    Result := LowerCase(Self);
 end;
 
 { TValueWideStringHelper }
 
-function TValueWideStringHelper.ToLower: WideString;
+function TValueWideStringHelper.ToLower: Widestring;
 begin
-  Result := LowerCase(Self);
+    Result := LowerCase(Self);
 end;
 
 { TValueUnicodeStringHelper }
 
-function TValueUnicodeStringHelper.ToLower: UnicodeString;
+function TValueUnicodeStringHelper.ToLower: Unicodestring;
 begin
-  Result := LowerCase(Self);
+    Result := LowerCase(Self);
 end;
 
 { TValueShortStringHelper }
 
-function TValueShortStringHelper.ToLower: ShortString;
+function TValueShortStringHelper.ToLower: Shortstring;
 begin
-  Result := LowerCase(Self);
+    Result := LowerCase(Self);
 end;
 
 { TValueUTF8StringHelper }
 
-function TValueUTF8StringHelper.ToLower: UTF8String;
+function TValueUTF8StringHelper.ToLower: Utf8string;
 begin
-  Result := LowerCase(Self);
+    Result := LowerCase(Self);
 end;
 
 { TValueRawByteStringHelper }
 
-function TValueRawByteStringHelper.ToLower: RawByteString;
+function TValueRawByteStringHelper.ToLower: Rawbytestring;
 begin
-  Result := LowerCase(Self);
+    Result := LowerCase(Self);
 end;
 
 { TValueUInt32Helper }
 
-class function TValueUInt32Helper.GetSignMask: UInt32;
+class function TValueUInt32Helper.GetSignMask: Uint32;
 begin
-  Result := $80000000;
+    Result := $80000000;
 end;
 
-class function TValueUInt32Helper.GetSizedSignMask(ABits: Byte): UInt32;
+class function TValueUInt32Helper.GetSizedSignMask(ABits: Byte): Uint32;
 begin
-  Result := SIZED_SIGN_MASK[ABits];
+    Result := SIZED_SIGN_MASK[ABits];
 end;
 
 class function TValueUInt32Helper.GetBitsLength: Byte;
 begin
-  Result := BITS_LENGTH;
+    Result := BITS_LENGTH;
 end;
 
 end.
-
