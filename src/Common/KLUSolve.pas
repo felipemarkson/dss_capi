@@ -4,7 +4,7 @@ unit KLUSolve;
 {$IFDEF MSWINDOWS}
     {$DEFINE KLUSOLVEX_CALL:=cdecl;external 'libklusolvex'}
 {$ELSE} // Unix in general
-    {$DEFINE KLUSOLVEX_CALL:=cdecl;external}
+    {$DEFINE KLUSOLVEX_CALL:=cdecl;external 'libklusolvex'}
 {$ENDIF}
 
 interface
