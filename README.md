@@ -1,4 +1,4 @@
-# DSS C-API: An unofficial C API for EPRI's OpenDSS
+# DSS C-API: An unofficial C API for EPRI's OpenDSS (Felipe's Version)
 > This is a fork of DSS Extensions's [DSS C-API](https://github.com/dss-extensions/dss_capi) and is not related to the [DSS Extensions](https://github.com/dss-extensions) or EPRI.
 
 > As explicit in [`LICENSE`](LICENSE), this code uses the same license as the original code, LGPL 2.1 or later.
