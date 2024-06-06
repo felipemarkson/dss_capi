@@ -511,8 +511,6 @@ begin
     else
         YPrimTemp := Yprim_Series;
 
-  // make sure randommult is 1.0 if not solution mode MonteFault
-
 
     // Now, Put in Yprim matrix
     case SpecType of

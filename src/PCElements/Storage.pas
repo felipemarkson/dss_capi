@@ -296,7 +296,6 @@ type
         procedure ComputeDCkW; // For Storage Update
         procedure CalcStorageModelContribution();
         procedure CalcInjCurrentArray();
-        // PROCEDURE CalcVterminal;
         procedure CalcVTerminalPhase();
 
         procedure CalcYPrimMatrix(Ymatrix: TcMatrix);
@@ -990,7 +989,6 @@ begin
     pctR := Other.pctR;
     pctX := Other.pctX;
 
-    RandomMult := Other.RandomMult;
     VWMode := Other.VWMode;
     VVMode := Other.VVMode;
     DRCMode := Other.DRCMode;
@@ -1072,7 +1070,6 @@ begin
     StorageClass := 1;
 
     StorageSolutionCount := -1;  // For keep track of the present solution in Injcurrent calcs
-    YPrimOpenCond := NIL;
 
     StorageVars.kVStorageBase := 12.47;
     VBase := 7200.0;
@@ -1192,7 +1189,6 @@ end;
 
 destructor TStorageObj.Destroy;
 begin
-    YPrimOpenCond.Free;
     UserModel.Free;
     DynaModel.Free;
     FreeAndNil(TraceFile);

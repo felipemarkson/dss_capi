@@ -133,7 +133,6 @@ type
         FirstIteration: Boolean;
         FixedSlip: LongBool;
 
-        RandomMult: Double;
         IndMach012SwitchOpen: Boolean;
 
         // Debugging
@@ -157,7 +156,6 @@ type
         function GetRotorLosses: Double;
         function GetStatorLosses: Double;
         function Compute_dSdP: Double;
-        procedure Randomize(Opt: Integer);
         procedure InitModel(V012, I012: TSymCompArray);
 
         procedure CalcYPrimMatrix(Ymatrix: TcMatrix);
@@ -637,19 +635,6 @@ begin
     I012[1] := Is1;    // Save for variable calcs
     I012[2] := Is2;
     I012[0] := 0;
-end;
-
-procedure TIndMach012Obj.Randomize(Opt: Integer);
-// typical proc for handling randomization in DSS fashion
-begin
-    case Opt of
-        0:
-            RandomMult := 1.0;
-        //   GAUSSIAN:  RandomMult := Gauss(YearlyShapeObj.Mean, YearlyShapeObj.StdDev);
-        UNIFORM:
-            RandomMult := Random;  // number between 0 and 1.0
-        //  LOGNORMAL: RandomMult := QuasiLognormal(YearlyShapeObj.Mean);
-    end;
 end;
 
 procedure TIndMach012Obj.InitModel(V012, I012: TSymCompArray);

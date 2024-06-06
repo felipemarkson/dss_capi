@@ -54,8 +54,6 @@ type
 
         ShapeFactor: Complex;
 
-        RandomMult: Double;
-
         Connection: Integer;  // 0 = line-neutral; 1=Delta
 
         DailyShapeObj: TLoadShapeObj;  // Daily Storage element Shape for this load
@@ -97,7 +95,6 @@ type
         CurrentLimited: LongBool;
         UserModelNameStr, UserModelEditStr: String;
 
-        YPrimOpenCond: TCmatrix;
         Tracefile: TFileStream;
         FirstSampleAfterReset: Boolean;
 
@@ -112,7 +109,6 @@ type
         procedure SetNominalDEROutput(); virtual; abstract;
         function UsingCIMDynamics(): Boolean;
         function CheckAmpsLimit(): Boolean;
-        procedure Randomize(Opt: Integer);
         procedure GetCurrents(Curr: pComplexArray); OVERRIDE;
         procedure StickCurrInTerminalArray(TermArray: pComplexArray; const Curr: Complex; i: Integer);
         function Get_Presentkvar: Double;
@@ -150,7 +146,6 @@ begin
         IComp := 0;
         VError := 0.8;
     end;
-    RandomMult := 1.0;
 
     YearlyShapeObj := NIL;
     DailyShapeObj := NIL;
@@ -210,20 +205,6 @@ begin
                 dynVars.IComp := PhaseP;
             Result := TRUE;
         end;
-    end;
-end;
-
-procedure TInvBasedPCE.Randomize(Opt: Integer);
-begin
-    case Opt of
-        0:
-            RandomMult := 1.0;
-        GAUSSIAN:
-            RandomMult := Gauss(YearlyShapeObj.Mean, YearlyShapeObj.StdDev);
-        UNIfORM:
-            RandomMult := Random;  // number between 0 and 1.0
-        LOGNORMAL:
-            RandomMult := QuasiLognormal(YearlyShapeObj.Mean);
     end;
 end;
 

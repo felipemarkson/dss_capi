@@ -260,14 +260,11 @@ type
         LastYear: Integer;   // added for speedup so we don't have to search for growth factor a lot
         OpenGeneratorSolutionCount: Integer;
         PVFactor: Double;  // deceleration Factor for computing vars for PV generators
-        RandomMult: Double;
         ShapeFactor: Complex;
         TraceFile: TFileStream;
         UserModel, ShaftModel: TGenUserModel; // User-Written Models
         UserModelNameStr, UserModelEditStr, ShaftModelNameStr, ShaftModelEditStr: String;
         V_Avg: Double;
-        V_Remembered: Double;
-        var_Remembered: Double;
         varBase: Double; // Base vars per phase
         varMax: Double;
         varMin: Double;
@@ -275,7 +272,6 @@ type
         VBase105: Double;
         VBase95: Double;
         Vthev: Complex; // Thevenin equivalent voltage (complex) for dynamic model
-        YPrimOpenCond: TCmatrix;  // To handle cases where one conductor of load is open ; We revert to admittance for inj currents
         YQFixed: Double;  // Fixed value of y for type 7 load
         Yii: Double; // for Type 3 Generator
         ShapeIsActual: Boolean;
@@ -285,7 +281,6 @@ type
         procedure CalcDutyMult(Hr: Double);  // now incorporates DutyStart offset
         procedure CalcGenModelContribution;
         procedure CalcInjCurrentArray;
-        procedure CalcVterminal;
         procedure CalcVTerminalPhase;
         procedure CalcVthev_Dyn;      // 3-phase Voltage behind transient reactance
         procedure CalcVthev_Dyn_Mod7(const V: Complex);
@@ -371,7 +366,6 @@ type
         function VariableName(i: Integer): String; OVERRIDE;
 
         procedure SetNominalGeneration;
-        procedure Randomize(Opt: Integer);   // 0 = reset to 1.0; 1 = Gaussian around mean and std Dev  ;  // 2 = uniform
 
         procedure ResetRegisters;
         procedure TakeSample;
@@ -379,7 +373,6 @@ type
         // Procedures for setting the DQDV used by the Solution Object
         procedure InitDQDVCalc;
         procedure BumpUpQ;
-        procedure RememberQV;
         procedure CalcDQDV;
         procedure ResetStartPoint;
 
@@ -704,32 +697,24 @@ begin
             begin
                 SetNCondsForConnection(self);
                 // VBase is always L-N voltage unless 1-phase device or more than 3 phases
-                with GenVars do 
-                    // CASE Connection OF
-                    // 1: VBase := kVGeneratorBase * 1000.0 ;
-                    // Else
+                with GenVars do
                     case Fnphases of
                         2, 3:
                             VBase := kVGeneratorBase * InvSQRT3x1000;    // L-N Volts
                     else
                         VBase := kVGeneratorBase * 1000.0;   // Just use what is supplied
                     end;
-                VBase95 := Vminpu * VBase;
-                VBase105 := Vmaxpu * VBase;
-
                 Yorder := Fnconds * Fnterms;
                 YPrimInvalid := TRUE;
             end;
             TProp.kV:
                 with Genvars do
-                begin
                     case FNphases of
                         2, 3:
                             VBase := kVGeneratorBase * InvSQRT3x1000;
                     else
                         VBase := kVGeneratorBase * 1000.0;
                     end;
-                end;
             TProp.kvar:
             begin
                 Genvars.Qnominalperphase := 1000.0 * kvarBase / Fnphases; // init to something reasonable
@@ -780,7 +765,6 @@ begin
                 if GenModel = 3 then
                     ActiveCircuit.Solution.SolutionInitialized := FALSE;
 
-            // Set shape objects;  returns nil if not valid
             // Sets the kW and kvar properties to match the peak kW demand from the Loadshape
             TProp.yearly:
                 if (YearlyShapeObj <> NIL) and YearlyShapeObj.UseActual then
@@ -972,7 +956,6 @@ begin
 
     GeneratorSolutionCount := -1;  // For keep track of the present solution in Injcurrent calcs
     OpenGeneratorSolutionCount := -1;
-    YPrimOpenCond := NIL;
 
     GenVars.kVGeneratorBase := 12.47;
     Vpu := 1.0;
@@ -983,7 +966,6 @@ begin
     VBase95 := Vminpu * Vbase;
     VBase105 := Vmaxpu * Vbase;
     Yorder := Fnterms * Fnconds;
-    RandomMult := 1.0;
     IsFixed := FALSE;
 
     // Machine rating stuff
@@ -1045,24 +1027,9 @@ end;
 destructor TGeneratorObj.Destroy;
 begin
     FreeAndNil(TraceFile);
-    YPrimOpenCond.Free;
     UserModel.Free;
     ShaftModel.Free;
     inherited Destroy;
-end;
-
-procedure TGeneratorObj.Randomize(Opt: Integer);
-begin
-    case Opt of
-        0:
-            RandomMult := 1.0;
-        GAUSSIAN:
-            RandomMult := Gauss(YearlyShapeObj.Mean, YearlyShapeObj.StdDev);
-        UNIfORM:
-            RandomMult := Random;  // number between 0 and 1.0
-        LOGNORMAL:
-            RandomMult := QuasiLognormal(YearlyShapeObj.Mean);
-    end;
 end;
 
 procedure TGeneratorObj.CalcDailyMult(Hr: Double);
@@ -2092,13 +2059,6 @@ begin
     GeneratorSolutionCount := ActiveCircuit.Solution.SolutionCount;
 end;
 
-procedure TGeneratorObj.CalcVTerminal;
-// Put terminal voltages in an array
-begin
-    ComputeVTerminal;
-    GeneratorSolutionCount := ActiveCircuit.Solution.SolutionCount;
-end;
-
 procedure TGeneratorObj.CalcGenModelContribution;
 // Calculates generator current and adds it properly into the injcurrent array
 // routines may also compute ITerminal  (ITerminalUpdated flag)
@@ -2277,20 +2237,6 @@ procedure TGeneratorObj.BumpUpQ;
 begin
     with Genvars do
         Qnominalperphase := Qnominalperphase + 0.1 * (varmax - varmin);
-end;
-
-procedure TGeneratorObj.RememberQV;
-var
-    i: Integer;
-
-begin
-    var_Remembered := Genvars.Qnominalperphase;
-    CalcVTerminal;
-    V_Avg := 0.0;
-    for i := 1 to Fnphases do
-        V_Avg := V_Avg + Cabs(Vterminal[i]);
-    V_Avg := V_Avg / Fnphases;
-    V_Remembered := V_Avg;
 end;
 
 procedure TGeneratorObj.CalcDQDV;

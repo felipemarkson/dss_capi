@@ -529,10 +529,6 @@ begin
                     VBase := kVLoadBase * 1000.0;
                 end;
             end;
-            VBase95 := Vminpu * VBase;
-            VBase105 := Vmaxpu * VBase;
-            VBaseLow := VLowpu * VBase;
-
             Yorder := Fnconds * Fnterms;
             Reallocmem(InjCurrent, SizeOf(InjCurrent[1]) * Yorder);
             YPrimInvalid := TRUE;

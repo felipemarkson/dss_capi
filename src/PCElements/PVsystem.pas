@@ -817,7 +817,6 @@ begin
     pctR := Other.pctR;
     pctX := Other.pctX;
 
-    RandomMult := Other.RandomMult;
     VWMode := Other.VWMode;
     WPMode := Other.WPMode;
     WVMode := Other.WVMode;
@@ -894,7 +893,6 @@ begin
     FClass := 1;
 
     PVSystemSolutionCount := -1;  // For keep track of the present solution in Injcurrent calcs
-    YPrimOpenCond := NIL;
 
     PVSystemVars.kVPVSystemBase := 12.47;
     VBase := 7200.0;
@@ -984,7 +982,6 @@ end;
 
 destructor TPVsystemObj.Destroy;
 begin
-    YPrimOpenCond.Free;
     UserModel.Free;
     FreeAndNil(TraceFile);
     inherited Destroy;
