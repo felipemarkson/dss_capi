@@ -245,7 +245,10 @@ type
         Units_deg,
         Units_degC,
         Units_A,
-        Units_kV
+        Units_kV,
+        Units_m,
+        Units_m_per_s,
+        Units_kg_m3
         // TODO add ArrayFromFile???
     );
 

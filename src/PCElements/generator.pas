@@ -625,9 +625,9 @@ begin
     PropertyFlags[ord(TProp.kV)] := [TPropertyFlag.Required, TPropertyFlag.Units_kV, TPropertyFlag.NonNegative];
 
     PropertyOffset[ord(TProp.kvar)] := ptruint(@obj.kvarBase);
-    PropertyFlags[ord(TProp.kvar)] := [TPropertyFlag.NoDefault, TPropertyFlag.RequiredInSpecSet];
+    PropertyFlags[ord(TProp.kvar)] := [TPropertyFlag.NoDefault, TPropertyFlag.RequiredInSpecSet, TPropertyFlag.Units_kvar];
 
-    PropertyFlags[ord(TProp.kW)] := [TPropertyFlag.RequiredInSpecSet];
+    PropertyFlags[ord(TProp.kW)] := [TPropertyFlag.RequiredInSpecSet, TPropertyFlag.Units_kW];
     PropertyFlags[ord(TProp.PF)] := [TPropertyFlag.RequiredInSpecSet, TPropertyFlag.PowerFactorLimits];
 
     // adv doubles

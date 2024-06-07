@@ -227,7 +227,7 @@ begin
     PropertyType[ord(TProp.kvar)] := TPropertyType.DoubleArrayProperty;
     PropertyOffset[ord(TProp.kvar)] := ptruint(@obj.FkvarRating);
     PropertyOffset2[ord(TProp.kvar)] := ptruint(@obj.FNumSteps);
-    PropertyFlags[ord(TProp.kvar)] := [TPropertyFlag.RequiredInSpecSet];
+    PropertyFlags[ord(TProp.kvar)] := [TPropertyFlag.RequiredInSpecSet, TPropertyFlag.Units_kvar];
 
     PropertyType[ord(TProp.R)] := TPropertyType.DoubleArrayProperty;
     PropertyOffset[ord(TProp.R)] := ptruint(@obj.FR);

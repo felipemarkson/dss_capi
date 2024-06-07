@@ -447,11 +447,11 @@ begin
 
     PropertyFlags[ord(TProp.kV)] := [TPropertyFlag.Required, TPropertyFlag.Units_kV, TPropertyFlag.NonNegative];
 
-    PropertyFlags[ord(TProp.kW)] := [TPropertyFlag.RequiredInSpecSet];
-    PropertyFlags[ord(TProp.kvar)] := [TPropertyFlag.RequiredInSpecSet, TPropertyFlag.NoDefault];
+    PropertyFlags[ord(TProp.kW)] := [TPropertyFlag.RequiredInSpecSet, TPropertyFlag.Units_kW];
+    PropertyFlags[ord(TProp.kvar)] := [TPropertyFlag.RequiredInSpecSet, TPropertyFlag.NoDefault, TPropertyFlag.Units_kvar];
     PropertyFlags[ord(TProp.PF)] := [TPropertyFlag.RequiredInSpecSet, TPropertyFlag.PowerFactorLimits, TPropertyFlag.Ordering_Last];
 
-    PropertyFlags[ord(TProp.kVA)] := [TPropertyFlag.RequiredInSpecSet, TPropertyFlag.NoDefault];
+    PropertyFlags[ord(TProp.kVA)] := [TPropertyFlag.RequiredInSpecSet, TPropertyFlag.NoDefault, TPropertyFlag.Units_kVA];
     PropertyFlags[ord(TProp.xfkVA)] := [TPropertyFlag.RequiredInSpecSet, TPropertyFlag.Units_kVA];
     
     PropertyFlags[ord(TProp.kWh)] := [TPropertyFlag.RequiredInSpecSet, TPropertyFlag.Units_kWh];

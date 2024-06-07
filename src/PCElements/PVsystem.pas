@@ -551,7 +551,7 @@ begin
 
     PropertyOffset[ord(TProp.kvar)] := ptruint(@obj.kvarRequested);
     PropertyReadFunction[ord(TProp.kvar)] := @Getkvar;
-    PropertyFlags[ord(TProp.kvar)] := [TPropertyFlag.ReadByFunction, TPropertyFlag.RequiredInSpecSet, TPropertyFlag.NoDefault];
+    PropertyFlags[ord(TProp.kvar)] := [TPropertyFlag.ReadByFunction, TPropertyFlag.RequiredInSpecSet, TPropertyFlag.NoDefault, TPropertyFlag.Units_kvar];
 
     // double percent
     PropertyScale[ord(TProp.pctPmpp)] := 0.01;
