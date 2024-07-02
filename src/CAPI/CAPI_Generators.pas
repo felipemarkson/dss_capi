@@ -334,6 +334,7 @@ begin
 
     if (DSS_EXTENSIONS_COMPAT and ord(DSSCompatFlag.SkipSideEffects)) = 0 then
     begin
+        elem.PropertySideEffects(ord(TGeneratorProp.Phases), 0, []);
         elem.RecalcElementData();
         elem.YPrimInvalid := true;
     end;
@@ -598,6 +599,7 @@ begin
     else
         elem.Connection := 0;
 
+    elem.PropertySideEffects(ord(TGeneratorProp.Conn), 0, []);
     elem.RecalcElementData();
     elem.YPrimInvalid := true;
 end;

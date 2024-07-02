@@ -323,6 +323,7 @@ begin
         pReactor.Connection := TReactorConnection.Wye;
 
     pReactor.PropertySideEffects(ord(TReactorProp.conn), prevVal, []);
+    pReactor.RecalcElementData();
 end;
 //------------------------------------------------------------------------------
 procedure Reactors_Set_Parallel(Value: TAPIBoolean); CDECL;

@@ -758,6 +758,7 @@ begin
 
     if (DSS_EXTENSIONS_COMPAT and ord(DSSCompatFlag.SkipSideEffects)) = 0 then
     begin
+        elem.PropertySideEffects(ord(TLoadProp.conn), 0, []);
         elem.RecalcElementData();
         elem.YPrimInvalid := true;
     end;
