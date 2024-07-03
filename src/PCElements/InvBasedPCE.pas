@@ -52,12 +52,6 @@ type
         Pnominalperphase: Double;
         Qnominalperphase: Double;
 
-        Reg_Hours: Integer;
-        Reg_kvarh: Integer;
-        Reg_kWh: Integer;
-        Reg_MaxkVA: Integer;
-        Reg_MaxkW: Integer;
-        Reg_Price: Integer;
         ShapeFactor: Complex;
 
         RandomMult: Double;

@@ -261,12 +261,6 @@ type
         OpenGeneratorSolutionCount: Integer;
         PVFactor: Double;  // deceleration Factor for computing vars for PV generators
         RandomMult: Double;
-        Reg_Hours: Integer;
-        Reg_kvarh: Integer;
-        Reg_kWh: Integer;
-        Reg_MaxkVA: Integer;
-        Reg_MaxkW: Integer;
-        Reg_Price: Integer;
         ShapeFactor: Complex;
         TraceFile: TFileStream;
         UserModel, ShaftModel: TGenUserModel; // User-Written Models
@@ -435,6 +429,13 @@ const
     // DEFAULT = 0;
     LOADMODE = 1;
     PRICEMODE = 2;
+
+    Reg_kWh = 1;
+    Reg_kvarh = 2;
+    Reg_MaxkW = 3;
+    Reg_MaxkVA = 4;
+    Reg_Hours = 5;
+    Reg_Price = 6;
 var
     PropInfo: Pointer = NIL;
     PropInfoLegacy: Pointer = NIL;
@@ -1020,13 +1021,6 @@ begin
     ShaftModelEditStr := '';
 
     DispatchValue := 0.0;   // Follow curves
-
-    Reg_kWh := 1;
-    Reg_kvarh := 2;
-    Reg_MaxkW := 3;
-    Reg_MaxkVA := 4;
-    Reg_Hours := 5;
-    Reg_Price := 6;
 
     PVFactor := 0.1;
     DebugTrace := FALSE;

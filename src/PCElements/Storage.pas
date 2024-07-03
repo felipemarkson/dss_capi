@@ -460,6 +460,12 @@ type
     TPropLegacy = TStoragePropLegacy;
 const
     NumPropsThisClass = Ord(High(TProp));
+    Reg_kWh = 1;
+    Reg_kvarh = 2;
+    Reg_MaxkW = 3;
+    Reg_MaxkVA = 4;
+    Reg_Hours = 5;
+    Reg_Price = 6;
 var
     PropInfo: Pointer = NIL;
     PropInfoLegacy: Pointer = NIL;    
@@ -1170,13 +1176,6 @@ begin
     kVASet := FALSE;
     kvarLimitSet := FALSE;
     kvarLimitNegSet := FALSE;
-
-    Reg_kWh := 1;
-    Reg_kvarh := 2;
-    Reg_MaxkW := 3;
-    Reg_MaxkVA := 4;
-    Reg_Hours := 5;
-    Reg_Price := 6;
 
     DebugTrace := FALSE;
     StorageObjSwitchOpen := FALSE;
