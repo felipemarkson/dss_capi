@@ -1112,7 +1112,14 @@ begin
         end;
         // DefaultHourMult := DefaultDailyShapeObj.GetMultAtHour(DynaVars.dblHour);
         // IF Load_Changed THEN Begin    //Added to update the current sources of all frequencies any time
-        InitializeForHarmonics(DSS);  //the value of a load changes in a proportional way
+        if not InitializeForHarmonics(DSS) then  //the value of a load changes in a proportional way
+        begin
+            if DSS.In_ReDirect then
+            begin
+                DSS.Redirect_Abort := TRUE;  // Get outta here
+                Exit;
+            end;
+        end;
         //      Load_Changed:=FALSE;     // Added 05 dec 2013 - D. Montenegro
         // End;
         SolveSnap();

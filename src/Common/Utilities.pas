@@ -962,9 +962,9 @@ function InitializeForHarmonics(DSS: TDSSContext): Boolean;
 var
     pcElem: TPCElement;
 begin
+    Result := False;
     if not savePresentVoltages(DSS) then // Zap voltage vector to disk
     begin
-        Result := False;
         Exit;
     end;
     
@@ -972,7 +972,11 @@ begin
     for pcElem in DSS.ActiveCircuit.PCElements do
     begin
         if pcElem.Enabled then
+        begin
             pcElem.InitHarmonics();   // Virtual function
+            if DSS.SolutionAbort then
+                Exit;
+        end;
     end;
     Result := true;
 end;
