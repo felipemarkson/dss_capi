@@ -1,5 +1,45 @@
-#ifndef DSS_USER_MODELS_H
-#define DSS_USER_MODELS_H
+/// NOTES:
+///
+/// - Before investing in user-models, investigate if your problem can be
+///   more easily solved using a custom solution loop. Typically, implementing
+///   a custom control loop is enough to handle most situations.
+///
+/// - Check the folder `examples/UserModels/` in the DSS C-API repository for
+///   a working example.
+///
+/// - For using TStorageVars and TCapControlVars with AltDSS/DSS C-API, define
+///   ALTDSS_USERMODEL, which uses int32_t for the booleans, at the moment.
+/// 
+/// - For using with OpenDSS v10, define OPENDSS_USERMODEL_V10.
+///
+/// - For OpenDSS v7 (and AltDSS/DSS C-API versions 0.10.7 and earlier), 
+///   define OPENDSS_USERMODEL_V7.
+///
+/// - For OpenDSS v8 and v9, the default build (without extra definitions)
+///   should work.
+///
+/// - The "ControlQueuePush" callback hasn't been tested with recent Delphi
+///   versions. If it doesn't work, feel free to open an issue at
+///   https://github.com/dss-extensions/dss_capi/issues
+///
+/// Although there are a few comments in the OpenDSS code that could suggest
+/// backwards compatibility, that doesn't work anymore for multiple reasons. 
+/// You need to compile a separate version for each version. Older DLLs might
+/// work or not depending on which struct fields are used by the user-model 
+/// DLL.
+///
+/// For OpenDSS v8+, many of the callback functions require the `ActorID`
+/// parameters. If you are running without extra PM actors, use ActorID = 1.
+/// Otherwise, you might need to pass the actor id through the edit command
+/// or dedicate a (state) variable.
+///
+/// -> If you use this, please cite the repository or the Git commit on your 
+///    work. This is distributed under the same license as the rest of DSS 
+///    C-API (see the LICENSE file in the repository root). This is original 
+///    work from DSS-Extensions.
+
+#ifndef DSS_USERMODELS_H
+#define DSS_USERMODELS_H
 
 #ifdef __cplusplus
 #    include <cstdint>
@@ -9,13 +49,11 @@
 #    include <stdbool.h>
 #endif
 
-#ifndef dss_long_bool
-#ifdef DSS_CAPI_DLL
+#ifdef ALTDSS_USERMODEL
 #define dss_long_bool int32_t
-#else
+#else // #ifdef ALTDSS_USERMODEL
 #define dss_long_bool bool
-#endif
-#endif
+#endif // #ifdef ALTDSS_USERMODEL
 
 #ifdef __cplusplus
 extern "C" {
@@ -88,24 +126,28 @@ struct TGeneratorVars
         PNominalPerPhase,
         QNominalPerPhase;  //  Target P and Q for power flow solution, watts, vars
 
-    // 32-bit integers}
+#ifdef OPENDSS_USERMODEL_V10
+    // deltaQNom was introduced for V10
+    double *deltaQNom;
+#endif // #ifdef OPENDSS_USERMODEL_V10
+
+    // 32-bit integers
     int32_t 
         NumPhases,       //Number of phases
         NumConductors,   // Total Number of conductors (wye-connected will have 4)
         Conn;   // 0 = wye; 1 = Delta
 
-    
-    //  Revisions (additions) to structure ...
-    //  Later additions are appended to end of the structure so that
-    //  previously compiled DLLs do not break
-
-    double VThevMag;  // Thevinen equivalent voltage for dynamic model
-    double VThevHarm; // Thevinen equivalent voltage mag reference for Harmonic model
-    double ThetaHarm; // Thevinen equivalent voltage angle reference for Harmonic model
+    double VThevMag;  // Thevenin equivalent voltage for dynamic model
+    double VThevHarm; // Thevenin equivalent voltage mag reference for Harmonic model
+    double ThetaHarm; // Thevenin equivalent voltage angle reference for Harmonic model
     double VTarget;   // Target voltage for generator with voltage control
     double RThev;
     double XThev;
     double XRdp;  // Assumed X/R for Xd'
+
+#ifdef ALTDSS_USERMODEL
+    double *deltaQNom;
+#endif // #ifdef ALTDSS_USERMODEL
 };
 
 
@@ -157,12 +199,11 @@ struct TCapControlVars
         NumCapSteps,
         AvailableSteps,     // available steps in controlled capacitor
         LastStepInService;  // Change this to force an update of cap states
-
     
     // NOTE: VOverrideBusName and CapacitorName may be UnicodeStrings in Delphi.
     // These pointers could be processed different according to the Pascal compiler.
-    char* VOverrideBusName; // Actual string data encoded in UTF-16 
-    char* CapacitorName; // Actual string data encoded in UTF-16
+    char* VOverrideBusName; // Pascal string data for EPRI's OpenDSS on Windows (Delphi)
+    char* CapacitorName; // Pascal string data for EPRI's OpenDSS on Windows (Delphi)
     
     int32_t ControlActionHandle;
     int32_t CondOffset; // Offset for monitored terminal
@@ -274,7 +315,7 @@ struct TDSSCallBacks
     // This is to handle the syntax "paramname=paramvalue" commonly used in DSS scripts
     // Copies the string to the location specified by s up to maxlen characters.
     // Caller must allocate space (MaxLen chars)
-
+#if defined(ALTDSS_USERMODEL) || defined(OPENDSS_USERMODEL_V7)
     DSS_MODEL_CALLBACK(void, DoDSSCommand)(char *S, uint32_t Maxlen);
     DSS_MODEL_CALLBACK(void, GetActiveElementBusNames)(char *Name1, uint32_t Len1, char *Name2, uint32_t Len2);
     DSS_MODEL_CALLBACK(void, GetActiveElementVoltages)(int32_t *NumVoltages, double /* complex */ **V);
@@ -306,6 +347,39 @@ struct TDSSCallBacks
     //TODO: check FPC vs Delphi compatibility for const parameters in ControlQueuePush
     DSS_MODEL_CALLBACK(int32_t, ControlQueuePush)(const int32_t Hour, const double Sec, const int32_t Code, const int32_t ProxyHdl, void *Owner);
     DSS_MODEL_CALLBACK(void, GetResultStr)(char *S, uint32_t Maxlen);
+#else // #if defined(ALTDSS_USERMODEL) || defined(OPENDSS_USERMODEL_V7)
+    DSS_MODEL_CALLBACK(void, DoDSSCommand)(char *S, uint32_t Maxlen);
+    DSS_MODEL_CALLBACK(void, GetActiveElementBusNames)(char *Name1, uint32_t Len1, char *Name2, uint32_t Len2);
+    DSS_MODEL_CALLBACK(void, GetActiveElementVoltages)(int32_t *NumVoltages, double /* complex */ **V);
+    DSS_MODEL_CALLBACK(void, GetActiveElementCurrents)(int32_t *NumCurrents, double /* complex */ **Curr, int32_t ActorID);
+    DSS_MODEL_CALLBACK(void, GetActiveElementLosses)(double /* complex */ *TotalLosses, double /* complex */ *LoadLosses, double /* complex */ *NoLoadLosses, int32_t ActorID);
+    DSS_MODEL_CALLBACK(void, GetActiveElementPower)(int32_t Terminal, double /* complex */ *TotalPower);
+    DSS_MODEL_CALLBACK(void, GetActiveElementNumCust)(int32_t *NumCust, int32_t *TotalCust);
+    DSS_MODEL_CALLBACK(void, GetActiveElementNodeRef)(int32_t Maxsize, int32_t** NodeReferenceArray);  // calling program must allocate
+    DSS_MODEL_CALLBACK(int32_t, GetActiveElementBusRef)(int32_t Terminal);
+    DSS_MODEL_CALLBACK(void, GetActiveElementTerminalInfo)(int32_t *NumTerminals, int32_t *NumConds, int32_t *NumPhases);
+    DSS_MODEL_CALLBACK(void, GetPtrToSystemVarray)(void *V, int32_t *iNumNodes); // Returns pointer to Solution.V and size
+    DSS_MODEL_CALLBACK(int32_t, GetActiveElementIndex)(void);
+    
+    DSS_MODEL_CALLBACK(bool, IsActiveElementEnabled)(void);
+    DSS_MODEL_CALLBACK(bool, IsBusCoordinateDefined)(int32_t BusRef, int32_t ActorID);
+    DSS_MODEL_CALLBACK(void, GetBusCoordinate)(int32_t BusRef, double *X, double* Y, int32_t ActorID);
+    DSS_MODEL_CALLBACK(double, GetBuskVBase)(int32_t BusRef, int32_t ActorID);
+    DSS_MODEL_CALLBACK(double, GetBusDistFromMeter)(int32_t BusRef, int32_t ActorID);
+
+    DSS_MODEL_CALLBACK(void, GetDynamicsStruct)(void **DynamicsStruct, int32_t ActorID); // Returns pointer to dynamics variables structure
+    DSS_MODEL_CALLBACK(double, GetStepSize)(int32_t ActorID); // Return just 'h' from dynamics record
+    DSS_MODEL_CALLBACK(double, GetTimeSec)(int32_t ActorID); // returns t in sec from top of hour
+    DSS_MODEL_CALLBACK(double, GetTimeHr)(int32_t ActorID); // returns time as a double in hours
+
+    DSS_MODEL_CALLBACK(void, GetPublicDataPtr)(void **PublicData, int32_t *PublicDataBytes, int32_t ActorID);
+    DSS_MODEL_CALLBACK(int32_t, GetActiveElementName)(char *FullName, uint32_t MaxNameLen, int32_t ActorID);
+    DSS_MODEL_CALLBACK(void*, GetActiveElementPtr)(int32_t ActorID);  // Returns pointer to active circuit element
+    
+    //TODO: check FPC vs Delphi compatibility for const parameters in ControlQueuePush
+    DSS_MODEL_CALLBACK(int32_t, ControlQueuePush)(const int32_t Hour, const double Sec, const int32_t Code, const int32_t ProxyHdl, void *Owner, int32_t ActorID);
+    DSS_MODEL_CALLBACK(void, GetResultStr)(char *S, uint32_t Maxlen);
+#endif // #if defined(ALTDSS_USERMODEL) || defined(OPENDSS_USERMODEL_V7)
 };
 
 #ifdef __cplusplus
@@ -327,4 +401,4 @@ struct TDSSCallBacks
 #pragma pack(pop)
 
 
-#endif // DSS_USER_MODELS_H
+#endif // DSS_USERMODELS_H
